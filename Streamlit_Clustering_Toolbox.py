@@ -82,10 +82,6 @@ if uploaded_file:
                 st.error("Dataset must contain at least 2 rows after preprocessing.")
                 st.stop()
             
-            if len(selected_columns) < 1:
-                st.error("At least one feature must be selected for clustering.")
-                st.stop()
-
             # Standardize the data
             scaler = StandardScaler()
             scaled_data = scaler.fit_transform(selected_df)
@@ -123,6 +119,7 @@ if uploaded_file:
                 ax.set_ylabel("Explained Variance Ratio")
                 ax.set_title("Explained Variance Ratio by Principal Component")
                 st.pyplot(fig)
+                plt.close(fig)
 
                 # Calculate and display cumulative variance
                 cumulative_variance = np.cumsum(explained_variance_ratio)
@@ -182,6 +179,7 @@ if uploaded_file:
                         ax.set_ylabel("Inertia")
                         ax.set_title("Elbow Method")
                         st.pyplot(fig)
+                        plt.close(fig)
 
                         # Execute clustering
                         model = KMeans(n_clusters=n_clusters, random_state=42)
@@ -221,6 +219,7 @@ if uploaded_file:
                         ax.set_title(f"AIC/BIC for GMM (Covariance Type: {covariance_type})")
                         ax.legend()
                         st.pyplot(fig)
+                        plt.close(fig)
 
                         # Execute clustering
                         model = GaussianMixture(n_components=n_clusters, covariance_type=covariance_type, random_state=42)
@@ -244,6 +243,7 @@ if uploaded_file:
                                 ax.set_xlabel("Points sorted by distance to k-th nearest neighbor")
                                 ax.set_ylabel("Distance to k-th nearest neighbor")
                                 st.pyplot(fig)
+                                plt.close(fig)
 
                         # Execute clustering
                         model = DBSCAN(eps=eps, min_samples=min_samples)
@@ -282,6 +282,7 @@ if uploaded_file:
                                 ax.set_xlabel("Samples or Clusters")
                                 ax.set_ylabel("Distance")
                                 st.pyplot(fig)
+                                plt.close(fig)
 
                         # Fix: Remove duplicate clustering execution
                         model = AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage_method)
@@ -395,6 +396,7 @@ if uploaded_file:
                             with st.spinner("Generating pairplot..."):
                                 fig = sns.pairplot(viz_df, hue="Cluster", diag_kind="kde", palette=color_palette)
                                 st.pyplot(fig)
+                                plt.close(fig.fig)
 
                     elif plot_type == "PCA 2D Scatter Plot":
                         st.write("### PCA 2D Scatter Plot (colored by Cluster)")
@@ -409,11 +411,12 @@ if uploaded_file:
                             sns.scatterplot(x="PCA1", y="PCA2", hue="Cluster", palette=color_palette, data=pca_2d_df, ax=ax, legend="full")
                             ax.set_title("PCA 2D Scatter Plot")
                             st.pyplot(fig)
+                            plt.close(fig)
 
                     elif plot_type == "t-SNE":
                         st.write("### t-SNE Visualization (colored by Cluster)")
-                        if viz_data.shape[0] < 4:  # t-SNE needs at least 4 samples
-                            st.warning("t-SNE requires at least 4 samples. Please use a larger dataset.")
+                        if viz_data.shape[0] < 19:  # perplexity slider min=5 requires (n-1)//3 >= 5, i.e. n >= 16
+                            st.warning("t-SNE requires at least 19 samples for a meaningful perplexity range. Please use a larger dataset.")
                         elif viz_data.shape[1] < 2:
                             st.warning("t-SNE requires at least 2 features. Please adjust your settings.")
                         else:
@@ -431,6 +434,7 @@ if uploaded_file:
                                 sns.scatterplot(x="t-SNE1", y="t-SNE2", hue="Cluster", palette=color_palette, data=tsne_df, ax=ax, legend="full")
                                 ax.set_title("t-SNE Visualization")
                                 st.pyplot(fig)
+                                plt.close(fig)
 
                 except Exception as e:
                     st.error(f"An error occurred during clustering: {str(e)}")

@@ -48,7 +48,7 @@ An interactive Streamlit dashboard for exploring and applying clustering algorit
 ### Installation
 
 ```bash
-git clone https://github.com/<your-username>/clustering-toolbox.git
+git clone https://github.com/egeozkoc/clustering-toolbox.git
 cd clustering-toolbox
 pip install -r requirements.txt
 ```
